@@ -1,0 +1,13 @@
+<div id="popup" class="ol-popup">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="popup-title" class="modal-title">{{ title | titlecase }}</h5>
+        </div>
+        <div id="popup-content" class="modal-body">{{ content }}</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="ol-popup" (click)="closePopup()">Close</button>
+        </div>
+      </div>
+    </div>
+</div>
