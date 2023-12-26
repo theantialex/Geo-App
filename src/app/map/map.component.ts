@@ -4,8 +4,16 @@ import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import {fromLonLat, toLonLat} from 'ol/proj.js';
-import { Overlay } from 'ol';
+import { Feature, Overlay } from 'ol';
 import { TitleCasePipe } from '@angular/common'
+import GeoJSON from 'ol/format/GeoJSON.js';
+import { Vector as VectorSource } from 'ol/source';
+import { Vector as VectorLayer } from 'ol/layer';
+import { defaults } from 'ol/interaction/defaults';
+import Style from 'ol/style/Style';
+import Stroke from 'ol/style/Stroke';
+import {getLength} from 'ol/sphere.js'
+
 
 @Component({
   selector: 'app-map',
@@ -20,10 +28,25 @@ export class MapComponent implements AfterViewInit {
   popup: Overlay | undefined;
   title: string = 'Not found';
   content: string = '';
+  vectorSource: VectorSource;
+  vectorLayer: VectorLayer<VectorSource>;
+
+  constructor() {
+    this.vectorSource = new VectorSource();
+    this.vectorLayer = new VectorLayer({
+      source: this.vectorSource,
+      style: {
+        'stroke-color': 'red',
+        'stroke-width': 2,
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
       if (typeof document != 'undefined') {
+
         this.map = new Map({
+          interactions: defaults({ doubleClickZoom: false }),
           view: new View({
             center: fromLonLat([7.0839985, 50.7378408]), // Coordinates for Eifel Str. 20, Bonn, Germany
             zoom: 19 // Default zoom level
@@ -32,6 +55,7 @@ export class MapComponent implements AfterViewInit {
             new TileLayer({
               source: new OSM(),
             }),
+            this.vectorLayer
           ],
           target: 'map'
         });
@@ -48,9 +72,22 @@ export class MapComponent implements AfterViewInit {
           if (this.map) {
             var point = this.map.getCoordinateFromPixel(event.pixel);
             this.displayPopup(point);
+            this.removeVectorLayer();
           }
         });
+
+        this.map.on('dblclick', (event) => {
+          if (this.map) {
+            var point = this.map.getCoordinateFromPixel(event.pixel);
+            this.refreshData(point);
+          }
+        });
+
       }
+  }
+
+  removeVectorLayer() {
+    this.map?.removeLayer(this.vectorLayer);
   }
 
   async getInfo(coordinate: number[]) {
@@ -76,5 +113,38 @@ export class MapComponent implements AfterViewInit {
     if (this.popup != undefined) {
       this.popup.setPosition(undefined);
     }
+  }
+
+  getColor(feature: any) {
+    let colors = ['green', 'black']
+    let ind = 0;
+    let geom = feature.getGeometry()
+    if (geom) {
+      ind = Math.round(getLength(geom)) % 2
+    }
+    return colors[ind];
+  }
+
+
+  async refreshData(coordinate: number[]) {
+    let lastLocation = toLonLat(coordinate);
+    let newVectorLayer = new VectorLayer({
+      source: new VectorSource({
+      url: 'https://api.geoapify.com/v1/isoline?lon='+ lastLocation[0] + '&lat=' + lastLocation[1] + '&type=time&mode=walk&range=200&range=500&range=1000'
+            + '&apiKey=6a72d6b8fafa4062acb947e892b30b0d',
+            format: new GeoJSON(),
+      }),
+      style:  (feature: any) => {
+        return new Style({
+          stroke: new Stroke({
+            color: this.getColor(feature),
+            width: 3,
+          }),
+        });
+      }
+    })
+        
+    this.map?.addLayer(newVectorLayer);
+    this.vectorLayer = newVectorLayer;
   }
 }
