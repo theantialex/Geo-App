@@ -3,6 +3,12 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.7.
 
 This project implements MapComponent. This Angular component integrates the OpenLayers library to create an interactive map with various features such as vector layers, WMS layers, popups, and event handling.
+The MapComponent is located in the app/map directory and consists of the following Angular component files:
+
+- map.component.ts
+- map.component.html
+- map.component.css
+- map.component.spec.ts (testing not implemented currently)
 
 ## Functionality
 
