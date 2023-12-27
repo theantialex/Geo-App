@@ -7,7 +7,7 @@ import {fromLonLat, toLonLat} from 'ol/proj.js';
 import { Feature, Overlay } from 'ol';
 import { TitleCasePipe } from '@angular/common'
 import GeoJSON from 'ol/format/GeoJSON.js';
-import { Vector as VectorSource } from 'ol/source';
+import { TileWMS, Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { defaults } from 'ol/interaction/defaults';
 import Style from 'ol/style/Style';
@@ -30,6 +30,8 @@ export class MapComponent implements AfterViewInit {
   content: string = '';
   vectorSource: VectorSource;
   vectorLayer: VectorLayer<VectorSource>;
+  wmsLayer: TileLayer<TileWMS>;
+  wmsSetting: boolean = false;
 
   constructor() {
     this.vectorSource = new VectorSource();
@@ -40,6 +42,18 @@ export class MapComponent implements AfterViewInit {
         'stroke-width': 2,
       }
     });
+
+    this.wmsLayer = new TileLayer({
+              source: new TileWMS({
+                url: "https://gitc.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi",
+                params: {
+                  'layers':'MODIS_Terra_L3_Land_Surface_Temp_Monthly_Day'
+                },
+                serverType: 'geoserver',
+                transition: 0
+              }),
+              visible: true
+    })
   }
 
   ngAfterViewInit(): void {
@@ -146,5 +160,14 @@ export class MapComponent implements AfterViewInit {
         
     this.map?.addLayer(newVectorLayer);
     this.vectorLayer = newVectorLayer;
+  }
+
+  toggleWMSLayerVisibility() {
+    if (this.wmsSetting) {
+      this.map?.removeLayer(this.wmsLayer)
+    } else {
+      this.map?.addLayer(this.wmsLayer)
+    }
+    this.wmsSetting = !this.wmsSetting;
   }
 }
