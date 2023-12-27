@@ -4,15 +4,15 @@ import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import { fromLonLat, toLonLat } from 'ol/proj.js';
-import Overlay from 'ol';
-import TitleCasePipe from '@angular/common'
+import { Overlay } from 'ol';
+import { TitleCasePipe }  from '@angular/common'
 import GeoJSON from 'ol/format/GeoJSON.js';
 import { TileWMS, Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
-import defaults from 'ol/interaction/defaults';
+import { defaults } from 'ol/interaction/defaults';
 import Style from 'ol/style/Style';
 import Stroke from 'ol/style/Stroke';
-import getLength from 'ol/sphere.js'
+import { getLength } from 'ol/sphere.js'
 
 
 @Component({
@@ -87,7 +87,7 @@ export class MapComponent implements AfterViewInit {
 
       this.map.on('dblclick', (event) => {
         if (this.map) {
-          var point = this.map.getCoordinateFromPixel(event.pixel); // getting click event coordinates
+          var point = this.map?.getCoordinateFromPixel(event.pixel); // getting click event coordinates
           this.refreshData(point);
         }
       });
@@ -95,7 +95,7 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
-  removeVectorLayer() {
+  removeVectorLayer(): void {
     this.map?.removeLayer(this.vectorLayer);
   }
 
@@ -109,23 +109,19 @@ export class MapComponent implements AfterViewInit {
       (result) => {
         this.title = result['results'][0]['result_type']; // parsing API responce
         this.content = "Address: " + result['results'][0]['formatted']; // parsing API responce
-
-        if (this.popup != undefined) {
-          this.popup.setPosition(coordinate);
-        }
+        this.popup?.setPosition(coordinate);
+      
       }).catch((error) => {
         console.error('Error fetching location information:', error);
       });
   }
 
   closePopup(): void {
-    if (this.popup != undefined) {
-      this.popup.setPosition(undefined);
-    }
+    this.popup?.setPosition(undefined);
   }
 
   // getting GeoJSON Feature style dynamically based on its geometry length
-  getColor(feature: any) {
+  getColor(feature: any): string {
     let colors = ['green', 'black'] // random example colors
     let ind = 0; // default color choice
     let geom = feature.getGeometry()
@@ -159,7 +155,7 @@ export class MapComponent implements AfterViewInit {
     this.map?.getView().setZoom(15); // zooming out in order to see accessable areas properly
   }
 
-  toggleWMSLayerVisibility() {
+  toggleWMSLayerVisibility(): void {
     if (this.wmsSetting) {
       this.map?.removeLayer(this.wmsLayer)
     } else {
