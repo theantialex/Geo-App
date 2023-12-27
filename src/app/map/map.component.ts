@@ -4,7 +4,7 @@ import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import {fromLonLat, toLonLat} from 'ol/proj.js';
-import { Overlay } from 'ol';
+import { Feature, Overlay } from 'ol';
 import { TitleCasePipe } from '@angular/common'
 import GeoJSON from 'ol/format/GeoJSON.js';
 import { TileWMS, Vector as VectorSource } from 'ol/source';
