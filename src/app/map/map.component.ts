@@ -160,6 +160,7 @@ export class MapComponent implements AfterViewInit {
       this.map?.removeLayer(this.wmsLayer)
     } else {
       this.map?.addLayer(this.wmsLayer)
+      this.map?.getView().setZoom(1); // zooming out in order to see WMS map properly
     }
     this.wmsSetting = !this.wmsSetting;
   }
