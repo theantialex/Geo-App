@@ -48,4 +48,18 @@
   right: -15px;
 }
 
+#sidebarMenu {
+  padding-top: 5rem;
+}
 
+.sidebar {
+  background-color: var(--header-color);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  padding: 1em;
+
+  width: 240px;
+  z-index: 600;
+}

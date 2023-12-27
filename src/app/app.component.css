@@ -5,7 +5,8 @@
 }
 header {
     background-color: var(--header-color);
-    padding: 2em;
+    padding: 1em;
+    height: fit-content;
 }
 header .title {
     font-size: 28px;
